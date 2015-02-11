@@ -1,0 +1,194 @@
+#!/bin/sh
+#PBS -N Hadoop
+#PBS -V
+
+#
+# Run parameters
+JAVA_HOME=/opt/java/default
+#JAVA_BINDIR=/usr/lib64/jvm/java/bin
+#JAVA_ROOT=/usr/lib64/jvm/java
+#JAVA_HOME=/global/common/carver/tig/java/jdk1.6.0_13/jre
+
+PROJ_DIR="/global/project/projectdirs/mphpcrd/khaledi"
+#FIXME: should turn off the DEBUG
+export DEBUG_HADOOP=1
+export CONFIG="$PROJ_DIR/.hadoop-$PBS_JOBID"
+#FIXME: HADOOP_HOME should be obselete, but have not checked
+#export HADOOP_HOME="$PROJ_DIR/hadoop-2.4.1-src/hadoop-dist/target/hadoop-2.4.1/"
+export HADOOP_HOME="$PROJ_DIR/hadoop-2.6.0-src/hadoop-dist/target/hadoop-2.6.0/"
+
+export HADOOP_YARN_HOME=$HADOOP_HOME
+export HADOOP_MAPREDUCE_DIR=$HADOOP_HOME/share/hadoop/mapreduce/
+
+export HADOOP_MAPRED_HOME=$HADOOP_HOME
+export HADOOP_COMMON_HOME=$HADOOP_HOME
+HOD_HOME="$PROJ_DIR/Hadoop-on-Demand"
+HOD_LIB="$HOD_HOME/lib"
+#[ -z $DEBUG_HADOOP ] || export HADOOP_ROOT_LOGGER=DEBUG,console
+#if [ $(echo $0|grep -c '^\.') -gt 0 ] ; then
+#  HOD_HOME="$(pwd)/$(dirname $0)"
+#else
+#  HOD_HOME=$(dirname $0|sed 's/bin//')
+#fi
+[ -e $HOD_HOME/conf/$NERSC_HOST/env ] && . $HOD_HOME/conf/$NERSC_HOST/env
+export TMPL=$HOD_HOME/conf/$NERSC_HOST
+#DATANODES=1
+
+function cleanup {
+  echo "Called cleanup"
+  if [ -e $CONFIG/cleanup ] ; then
+    . $CONFIG/cleanup
+  fi
+  killall java
+  rm -rf $CONFIG
+  exit
+}
+trap cleanup 2 15
+
+export LOGS="$SCRATCH/logs/${NERSC_HOST}-${PBS_JOBID}"
+echo "Logs can be found in $LOGS"
+[ ! -d "$LOGS" ] && mkdir -p $LOGS
+export NODELIST="$CONFIG/nodelist"
+# Defaults
+export HADOOP_CONF_DIR=$CONFIG
+export HADOOP_LOG_DIR=$LOGS/hadoop_logs
+export HADOOP_PID_DIR=$LOGS/hadoop_pids
+export HADOOP_IDENT_STRING=$USER
+
+export YARN_CONF_DIR=$CONFIG
+export YARN_LOG_DIR=$LOGS/yarn_logs
+export YARN_PID_DIR=$LOGS/yarn_pids
+export YARN_IDENT_STRING=$USER
+export HADOOP_HEAPSIZE=4096
+export YARN_HEAPSIZE=4096
+
+[ -d "$CONFIG" ] || mkdir $CONFIG
+
+
+# Override
+. $TMPL/setup
+
+$GET_ID|sort -n|awk 'BEGIN{i=1}{print i":"$1":";i++}'|grep -v ":$HOSTNAME:" > $NODELIST
+
+$GET_IPS| grep 'inet addr'|awk -F: '{print $2}'|sed 's/ .*//' > $CONFIG/slaves
+
+export IP=$(/sbin/ifconfig $INT|grep 'inet addr'|awk -F: '{print $2}'|sed 's/ .*//')
+echo "http://$HNAME:50030/" > ~/hadoop.lnk
+
+echo "Will start on $NODECT nodes"
+echo ""
+echo "Resource Manager will available at"
+echo "http://$IP:8032/"
+echo "Track jobs using w3m http://$IP:8088/"
+
+
+echo "If you submit jobs outside of this shell, then cut and paste the following..."
+echo ""
+if [ $(echo $SHELL|grep -c csh) -gt 0 ] ; then
+  echo "setenv HADOOP_CONF_DIR  $CONFIG"
+else  
+  echo "export HADOOP_CONF_DIR=$CONFIG"
+fi
+echo ""
+
+if [ -z $DATANODES ] || [ $DATANODES -eq 0 ] ; then
+  EXT="-nohdfs"
+  export DATANODES=0
+  export  BASE="nerscfs"
+else
+  EXT=""
+  export BASE="hdfs"
+fi
+
+export LDIR=/tmp/$BASE-$USER
+
+for file in "mapred" "core" "hdfs" "yarn" "mapred-queues" ; do
+  cat $TMPL/$file-site${EXT}.xml.tmpl | \
+	sed "s|%IP%|$IP|"| \
+	sed "s|%SCRATCH%|$SCRATCH|"| \
+	sed "s|%BASE%|$BASE|"| \
+	sed "s|%USER%|$USER|" > $CONFIG/$file-site.xml
+done
+
+for file in yarn-env log4j hadoop-policy hadoop-metrics hadoop-metrics2 hadoop-env container-executor configuration capacity-scheduler ; do
+  cp $TMPL/$file.* $CONFIG/
+done
+
+for file in httpfs; do
+  cp $TMPL/$file* $CONFIG/
+done
+
+#[ -e $TMPL/hadoop-env.sh ] && cp $TMPL/hadoop-env.sh $CONFIG/hadoop-env.sh
+# Adopted from:
+# http://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/ClusterSetup.html#Hadoop_Startup
+
+if [ ! -d "$LDIR" ] ; then
+  mkdir $LDIR
+fi
+
+
+if [ $DATANODES -gt 0 ] ; then
+  echo "Starting HDFS"
+  if [ ! -d $SCRATCH/hdfs/name ] ; then
+    mkdir $SCRATCH/hdfs
+    mkdir $SCRATCH/hdfs/name
+  fi
+  ln -s $SCRATCH/hdfs/name $LDIR/name
+#  echo "Y"|hadoop --config $CONFIG namenode -format  > $LOGS/format.log 2>&1 
+ # Format a new distributed filesystem:
+  $HADOOP_HOME/bin/hdfs namenode -format   > $LOGS/hdfs.log 2>&1 &
+  $HADOOP_HOME/sbin/start-dfs.sh  > $LOGS/dfs.log 2>&1 &
+#Start the HDFS with the following command, run on the designated NameNode:
+  $HADOOP_HOME/sbin/hadoop-deamon.sh --config $CONFIG --script hdfs start namenode > $LOGS/namenode.log 2>&1 &
+  echo $! >> $CONFIG/pids
+fi
+#[ -z $DEBUG_HADOOP ] || echo "Starting HDFS"
+#$HADOOP_HOME/bin/hdfs namenode -format > $LOGS/hdfs_namenode.log 2>&1 &
+
+#Start the YARN with the following command, run on the designated ResourceManager:
+[ -z $DEBUG_HADOOP ] || echo "Starting the resource manager"
+$HADOOP_HOME/sbin/yarn-daemon.sh --config $CONFIG start resourcemanager > $LOGS/resourcemanager.log 2>&1 
+#$HADOOP_HOME/sbin/yarn-daemon.sh --config $CONFIG start proxyserver > $LOGS/proxyserver.log 2>&1 
+[ -z $DEBUG_HADOOP ] || echo "Starting the history server"
+$HADOOP_HOME/sbin/mr-jobhistory-daemon.sh --config $CONFIG start historyserver > $LOGS/historyserver.log 2>&1 
+
+
+# TODO: Add check for resource manager running.  Use sleep as work around.
+sleep 3
+
+#
+# Create env file
+create_env
+
+# Start map reduce tasks
+#
+[ -z $DEBUG_HADOOP ] || echo "Starting node managers"
+$RUN_DEEP $HOD_HOME/scripts/run_worker &
+
+# FIXME:The NUMA aware version 
+#[ -z $DEBUG_HADOOP ] || echo "Starting NUMA aware node manager"
+#$NGET_ID|sort -n|awk 'BEGIN{i=1}{print i":"$1":";i++}'|grep -v ":$HOSTNAME:" > $NODELIST
+#$NRUN_DEEP $HOD_HOME/scripts/run_worker &
+
+echo $! >> $CONFIG/pids
+
+# TODO: Add a check for task trackers to be up
+
+PATH=${PATH}:${HADOOP_YARN_HOME}/bin
+export PATH
+
+echo "Configuring HADOOP_CONF_DIR to use $HADOOP_CONF_DIR"
+export HADOOP_CONF_DIR=$CONFIG
+
+echo "Starting $SHELL"
+if [ $# -gt 0 ] ; then
+  echo "Will run with args: $*"
+fi
+
+echo "Type exit to shutdown hadoop"
+$SHELL $*
+
+# Wait for exit from Shell
+$HOD_HOME/scripts/cleanup_hadoop
+
+#rm $NODELIST

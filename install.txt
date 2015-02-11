@@ -1,0 +1,102 @@
+Download apache-maven-3.2.5-src.zip
+
+unzip apache-maven-3.2.5-src.zip
+apache-maven-3.2.5-bin.zip
+unzip apache-maven-3.2.5-bin.zip
+
+
+
+
+git clone git://github.com/apache/spark.git
+
+
+module load java (default 1.7)
+setenv shows 
+
+JAVA_PATH=/opt/java/jdk1.7.0_07
+JAVA_VERSION=jdk1.7.0_07
+
+
+
+
+setenv M2_HOME /global/project/projectdirs/mphpcrd/khaledi/apache-maven-3.2.5
+setenv M2 $M2_HOME/bin
+setenv PATH ${M2}:${PATH}
+
+setenv  MAVEN_OPTS "-Xmx2g -XX:MaxPermSize=512M -XX:ReservedCodeCacheSize=512m"
+
+
+
+The autotools requires loading 
+module load autoconf
+module load libtool
+module load automake
+
+module load java
+module load cmake
+
+download protobuf (note latest copy is not supported, we need 2.5.0)
+
+wget http://protobuf.googlecode.com/files/protobuf-2.5.0.tar.gz
+tar xzvf download/protobuf-2.5.0.tar.gz
+
+./configure --prefix=/global/project/projectdirs/mphpcrd/khaledi/protobuf-2.5.0
+make -j 16
+make install
+
+
+
+setenv PROTO_HOME /global/project/projectdirs/mphpcrd/khaledi/protobuf-2.5.0
+setenv PROTO_BIN $PROTO_HOME/bin
+setenv PATH ${PROTO_BIN}:${PATH}
+
+
+Create source and binary distributions with native code and documentation:
+ 
+#On 2.4 we used
+$mvn package -Pdist -Pdoc -Psrc -Dtar -DskipTests
+
+#On 2.6 we used
+$ mvn package -Pdist,native,docs,src -DskipTests -Dtar
+
+
+
+
+
+download hadoop-2.4.1.tar.gz
+tar xzvf hadoop-2.4.1.tar.gz
+
+setenv HADOOP_HOME /global/project/projectdirs/mphpcrd/khaledi/hadoop-2.4.1-src/hadoop-dist/target/hadoop-2.4.1
+
+
+cd spark 
+
+
+mvn -Pyarn -Phadoop-2.4 -Dhadoop.version=2.4.1 -DskipTests clean package
+
+
+
+hadoop
+module load hadoop
+
+start_hadoop
+
+
+
+
+The installation of NERSC for hadoop
+
+git clone https://github.com/NERSC/Hadoop-on-Demand.git
+
+
+
+
+
+
+
+
+
+
+
+
+
