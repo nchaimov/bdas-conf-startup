@@ -5,24 +5,21 @@
 #
 # Run parameters
 JAVA_HOME=/opt/java/default
-#JAVA_BINDIR=/usr/lib64/jvm/java/bin
-#JAVA_ROOT=/usr/lib64/jvm/java
-#JAVA_HOME=/global/common/carver/tig/java/jdk1.6.0_13/jre
 
 PROJ_DIR="/global/project/projectdirs/mphpcrd/khaledi"
 #FIXME: should turn off the DEBUG
 export DEBUG_HADOOP=1
 export CONFIG="$PROJ_DIR/.hadoop-$PBS_JOBID"
 #FIXME: HADOOP_HOME should be obselete, but have not checked
-#export HADOOP_HOME="$PROJ_DIR/hadoop-2.4.1-src/hadoop-dist/target/hadoop-2.4.1/"
-export HADOOP_HOME="$PROJ_DIR/hadoop-2.6.0-src/hadoop-dist/target/hadoop-2.6.0/"
+export HADOOP_HOME="$PROJ_DIR/hadoop-2.4.1-src/hadoop-dist/target/hadoop-2.4.1/"
+#export HADOOP_HOME="$PROJ_DIR/hadoop-2.6.0-src/hadoop-dist/target/hadoop-2.6.0/"
 
 export HADOOP_YARN_HOME=$HADOOP_HOME
 export HADOOP_MAPREDUCE_DIR=$HADOOP_HOME/share/hadoop/mapreduce/
 
 export HADOOP_MAPRED_HOME=$HADOOP_HOME
 export HADOOP_COMMON_HOME=$HADOOP_HOME
-HOD_HOME="$PROJ_DIR/Hadoop-on-Demand"
+HOD_HOME="$PROJ_DIR/BDAS-Conf-Startup"
 HOD_LIB="$HOD_HOME/lib"
 #[ -z $DEBUG_HADOOP ] || export HADOOP_ROOT_LOGGER=DEBUG,console
 #if [ $(echo $0|grep -c '^\.') -gt 0 ] ; then
@@ -44,6 +41,10 @@ function cleanup {
   exit
 }
 trap cleanup 2 15
+trap cleanup 6 15
+trap cleanup 9 15
+
+
 
 export LOGS="$SCRATCH/logs/${NERSC_HOST}-${PBS_JOBID}"
 echo "Logs can be found in $LOGS"

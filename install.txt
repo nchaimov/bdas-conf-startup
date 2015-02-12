@@ -16,24 +16,33 @@ setenv shows
 JAVA_PATH=/opt/java/jdk1.7.0_07
 JAVA_VERSION=jdk1.7.0_07
 
+The autotools requires loading 
 
 
 
 setenv M2_HOME /global/project/projectdirs/mphpcrd/khaledi/apache-maven-3.2.5
 setenv M2 $M2_HOME/bin
 setenv PATH ${M2}:${PATH}
-
 setenv  MAVEN_OPTS "-Xmx2g -XX:MaxPermSize=512M -XX:ReservedCodeCacheSize=512m"
 
+setenv PROTO_HOME /global/project/projectdirs/mphpcrd/khaledi/protobuf-2.5.0
+setenv PROTO_BIN $PROTO_HOME/bin
+setenv PATH ${PROTO_BIN}:${PATH}
 
 
-The autotools requires loading 
+
+
 module load autoconf
 module load libtool
 module load automake
 
 module load java
-module load cmake
+module unload darshan
+# It seems that avoiding the loading of cmake 
+# allow the build to complete
+# Frontend compiler is detected and thus every thing compile fine
+#module load cmake
+
 
 download protobuf (note latest copy is not supported, we need 2.5.0)
 
@@ -45,10 +54,6 @@ make -j 16
 make install
 
 
-
-setenv PROTO_HOME /global/project/projectdirs/mphpcrd/khaledi/protobuf-2.5.0
-setenv PROTO_BIN $PROTO_HOME/bin
-setenv PATH ${PROTO_BIN}:${PATH}
 
 
 Create source and binary distributions with native code and documentation:
