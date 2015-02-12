@@ -1,0 +1,27 @@
+# Default system properties included when running spark-submit.
+# This is useful for setting default environmental settings.
+
+# Example:
+# spark.master                     spark://master:7077
+# spark.eventLog.enabled           true
+# spark.eventLog.dir               hdfs://namenode:8021/directory
+# spark.serializer                 org.apache.spark.serializer.KryoSerializer
+# spark.driver.memory              5g
+# spark.executor.extraJavaOptions  -XX:+PrintGCDetails -Dkey=value -Dnumbers="one two three"
+
+#Spark is an application within hadoop. It should be running on the worker side.
+#spark.master spark://%IP%:7077
+#spark.ui.port   4040
+#spark.ui.retainedStages 1000
+
+spark.eventLog.enabled true
+spark.eventLog.dir  file://%SCRATCH%/logs
+spark.driver.memory 4g
+spark.executor.memory 2g
+spark.local.dir file://%SCRATCH%/spark
+
+# YARN configuration
+#spark.yarn.applicationMaster.waitTries 10
+spark.yarn.submit.file.replication 1
+#spark.yarn.access.namenodes
+
