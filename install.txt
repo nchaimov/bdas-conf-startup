@@ -42,6 +42,15 @@ module unload darshan
 # allow the build to complete
 # Frontend compiler is detected and thus every thing compile fine
 #module load cmake
+#The problem is that the native hadoop libaries are not possible to load.
+
+
+To make things build With cmake
+I needed to comment most of the test and dfs from 
+hadoop-2.5.2-src/hadoop-hdfs-project/hadoop-hdfs/src/CMakeLists.txt
+hadoop-2.5.2-src/hadoop-tools/hadoop-pipes/src/CMakeLists.txt
+
+
 
 
 download protobuf (note latest copy is not supported, we need 2.5.0)

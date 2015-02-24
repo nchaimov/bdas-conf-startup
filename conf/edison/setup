@@ -26,7 +26,7 @@ export HADOOP_OPTS="-Djava.security.egd=file:/dev/urandom"
 #cp $TMPL/hadoop-env.sh $CONFIG/hadoop-env.sh
 
 # We need to move this eventually
-export HADOOP_PRELOAD=$HOD_LIB/libget.so
+export HADOOP_PRELOAD=$HADOOP_YARN_LIB/libget.so
 
 function create_env {
   printenv|grep -v '}'|grep -v '{'| sed 's/^/export /' |sed "s/=/='/" |sed "s/\$/'/" > $CONFIG/env

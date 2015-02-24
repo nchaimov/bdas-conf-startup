@@ -11,14 +11,16 @@ PROJ_DIR="/global/project/projectdirs/mphpcrd/khaledi"
 export DEBUG_HADOOP=1
 export CONFIG="$PROJ_DIR/.hadoop-$PBS_JOBID"
 #FIXME: HADOOP_HOME should be obselete, but have not checked
-export HADOOP_HOME="$PROJ_DIR/hadoop-2.4.1-src/hadoop-dist/target/hadoop-2.4.1/"
+#export HADOOP_HOME="$PROJ_DIR/hadoop-2.4.1-src/hadoop-dist/target/hadoop-2.4.1/"
+export HADOOP_HOME="$PROJ_DIR/hadoop-2.5.2-src/hadoop-dist/target/hadoop-2.5.2/"
+
 #export HADOOP_HOME="$PROJ_DIR/hadoop-2.6.0-src/hadoop-dist/target/hadoop-2.6.0/"
 
 export HADOOP_YARN_HOME=$HADOOP_HOME
 export HADOOP_MAPREDUCE_DIR=$HADOOP_HOME/share/hadoop/mapreduce/
-
 export HADOOP_MAPRED_HOME=$HADOOP_HOME
 export HADOOP_COMMON_HOME=$HADOOP_HOME
+
 BDAS_HOME="$PROJ_DIR/BDAS-Conf-Startup"
 HADOOP_YARN_LIB="$BDAS_HOME/lib"
 [ -e $BDAS_HOME/conf/$NERSC_HOST/env ] && . $BDAS_HOME/conf/$NERSC_HOST/env
@@ -184,6 +186,6 @@ echo "Type exit to shutdown hadoop"
 $SHELL $*
 
 # Wait for exit from Shell
-$HOD_HOME/scripts/cleanup_hadoop
+$BDAS_HOME/scripts/cleanup_hadoop
 
 #rm $NODELIST

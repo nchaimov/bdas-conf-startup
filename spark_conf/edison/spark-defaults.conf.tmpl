@@ -16,9 +16,10 @@
 
 spark.eventLog.enabled true
 spark.eventLog.dir  file://%SCRATCH%/logs
+spark.eventLog.enabled true
 spark.driver.memory 4g
 spark.executor.memory 2g
-spark.local.dir file://%SCRATCH%/spark
+spark.local.dir %SCRATCH%/spark
 
 # YARN configuration
 #spark.yarn.applicationMaster.waitTries 10

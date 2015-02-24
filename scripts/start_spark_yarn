@@ -194,7 +194,7 @@ if [ $# -gt 0 ] ; then
 fi
 # TODO: make sure all node managers are up and running
 sleep 3
-echo "Type Quit to exit spark shell"
+echo "Type exit to exit spark shell"
 #$SHELL $* 
 $SPARK_HOME/bin/spark-shell --master yarn-client
 
