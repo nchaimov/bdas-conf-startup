@@ -17,21 +17,26 @@
 <!-- Put site-specific property overrides in this file. -->
 
 <configuration>
+
 <property>
-<name>dfs.namenode.name.dir</name>
-<value>/tmp/%BASE%-%USER%/hdfs/name/</value>
+<name>fs.defaultFS</name>
+<value>file:///tmp/%BASE%-%USER%/defaultFS/</value>
+</property>
+
+<property>
+  <name>fs.tachyon.impl</name>
+  <value>tachyon.hadoop.TFS</value>
+</property>
+
+<property>
+<name>io.file.buffer.size</name>
+<value>131072</value>
 </property>
 
 
 <property>
-<name>dfs.datanode.data.dir</name>
-<value>/tmp/%BASE%-%USER%/hdfs/data/</value>
-</property>
-
-
-<property>
-  <name>dfs.replication</name>
-  <value>1</value>
+<name>hadoop.tmp.dir</name>
+<value>/tmp/%BASE%-%USER%/tmp</value>
 </property>
 
 </configuration>

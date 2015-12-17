@@ -107,10 +107,25 @@ git clone https://github.com/NERSC/Hadoop-on-Demand.git
 
 
 
+For the analysis we downloaded 
+
+git clone https://github.com/kayousterhout/trace-analysis.git
+
+
+module load python
+
+module list
+
+module swap numpy numpy/1.7.1
 
 
 
 
+To avoid disk usage for taychon
+
+git clone git://github.com/amplab/tachyon.git
+cd tachyon
+mvn install -DskipTests
 
 
 

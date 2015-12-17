@@ -34,4 +34,32 @@
 <value>/tmp/%BASE%-%USER%/tmp</value>
 </property>
 
+<property>
+  <name>hive.exec.scratchdir</name>
+  <value>/scratch1/scratchdirs/nchaimov/hive-scratch</value>
+  <description>Scratch space for Hive jobs</description>
+</property>
+
+<property>
+  <name>hive.metastore.warehouse.dir</name>
+  <value>file:///scratch1/scratchdirs/nchaimov/hive/warehouse</value>
+  <description>location of default database for the warehouse</description>
+</property>
+
+
+<property>
+  <name>hive.metastore.metadb.dir</name>
+  <value>file:///scratch1/scratchdirs/nchaimov/hive/metadb</value>
+  <description>
+  Required by metastore server or if the uris argument below is not supplied
+  </description>
+</property>
+
+
+<property>
+  <name>hive.metastore.rawstore.impl</name>
+  <value>org.apache.hadoop.hive.metastore.ObjectStore</value>
+  <description>Name of the class that implements org.apache.hadoop.hive.metastore.rawstore interface. This class is used to store and retrieval of raw metadata objects such as table, database</description>
+</property>
+
 </configuration>

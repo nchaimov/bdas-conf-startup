@@ -48,7 +48,7 @@
     </property>
     <property>
         <name>yarn.scheduler.maximum-allocation-mb</name>
-        <value>64768</value>
+        <value>8192</value>
     </property>
     <property>
         <name>yarn.scheduler.minimum-allocation-vcores</name>
@@ -72,17 +72,11 @@
 
     <!-- Configuration for node manager   -->
 
-    <property>
+    <!--property>
       <name>yarn.nodemanager.local-dirs</name>
-      <value>%SCRATCH%/spark</value>
+      <value>/tmp/%BASE%-%USER%/nodemanager_local</value>
     </property>
-
-    <!--property>
-      <name>yarn.nodemanager.local-dirs</name>
-      <value>/dev/shm/spark</value>
-    </property-->
-
-    <!--property>
+     <property>
       <name>yarn.nodemanager.log-dirs</name>
       <value>/tmp/%BASE%-%USER%/userlogs</value>
     </property-->
@@ -108,7 +102,7 @@
 
     <property>
         <name>yarn.nodemanager.resource.memory-mb</name>
-        <value>64768</value>
+        <value>32768</value>
     </property>
     <property>
         <name>yarn.nodemanager.resource.cpu-vcores</name>
@@ -117,11 +111,6 @@
     <property>
         <name>yarn.nodemanager.vmem-pmem-ratio</name>
         <value>2.1</value>
-    </property>
-
-    <property>
-        <name>yarn.nonemanager.vmem-check-enabled</name>
-        <value>false</value>
     </property>
 
 </configuration>

@@ -15,14 +15,24 @@
 #spark.ui.retainedStages 1000
 
 spark.eventLog.enabled true
-spark.eventLog.dir  file://%SCRATCH%/logs
-spark.eventLog.enabled true
-spark.driver.memory 4g
-spark.executor.memory 2g
+spark.eventLog.dir  file://%SCRATCH%/logs/spark
+spark.driver.memory 16g
+spark.driver.maxResultSize 4g
+spark.executor.memory 24g
 spark.local.dir %SCRATCH%/spark
+spark.shuffle.consolidateFiles true
+#spark.shuffle.memoryFraction 0.0
 
+#spark.tachyonStore.baseDir 
+#spark.tachyonStore.url tachyon://localhost:19998
 # YARN configuration
 #spark.yarn.applicationMaster.waitTries 10
 spark.yarn.submit.file.replication 1
 #spark.yarn.access.namenodes
 
+# METRICS
+spark.metrics.conf.*.sink.csv.class=org.apache.spark.metrics.sink.CsvSink
+spark.metrics.conf.*.sink.csv.period=1
+spark.metrics.conf.*.sink.csv.unit=seconds
+spark.metrics.conf.*.sink.csv.directory=/scratch1/scratchdirs/nchaimov/spark-csvsink
+spark.metrics.conf.*.source.jvm.class=org.apache.spark.metrics.source.JvmSource

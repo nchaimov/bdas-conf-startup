@@ -14,8 +14,6 @@
 -->
 <configuration>
 
-  <!-- Site specific YARN configuration properties -->
-
     <property>
       <name>yarn.resourcemanager.hostname</name>
       <value>%IP%</value>
@@ -24,6 +22,7 @@
       <name>yarn.resourcemanager.address</name>
       <value>%IP%:8032</value>
     </property>
+
     <property>
       <name>yarn.resourcemanager.scheduler.address</name>
       <value>%IP%:8030</value>
@@ -42,86 +41,42 @@
     </property>
 
 
+
+
+
+
+
+
+
+
+<!-- Site specific YARN configuration properties -->
     <property>
         <name>yarn.scheduler.minimum-allocation-mb</name>
-        <value>1024</value>
+        <value>128</value>
     </property>
     <property>
         <name>yarn.scheduler.maximum-allocation-mb</name>
-        <value>64768</value>
+        <value>2048</value>
     </property>
     <property>
         <name>yarn.scheduler.minimum-allocation-vcores</name>
         <value>1</value>
     </property>
-
     <property>
         <name>yarn.scheduler.maximum-allocation-vcores</name>
         <value>24</value>
     </property>
-   
-   <property>
-        <name>yarn.app.mapreduce.am.resource.mb</name>
-        <value>4096</value>
-    </property>
-    <property>
-        <name>yarn.app.mapreduce.am.command-opts</name>
-        <value>-Xmx3072m</value>
-    </property>
- 
 
-    <!-- Configuration for node manager   -->
 
-    <property>
-      <name>yarn.nodemanager.local-dirs</name>
-      <value>%SCRATCH%/spark</value>
-    </property>
-
-    <!--property>
-      <name>yarn.nodemanager.local-dirs</name>
-      <value>/dev/shm/spark</value>
-    </property-->
-
-    <!--property>
-      <name>yarn.nodemanager.log-dirs</name>
-      <value>/tmp/%BASE%-%USER%/userlogs</value>
-    </property-->
-    
-     <property>
-        <name>yarn.nodemanager.resourcemanager.connect.wait.secs</name>
-        <value>30</value>
-    </property>
-     <property>
-        <name>yarn.nodemanager.resourcemanager.connect.retry_interval.secs</name>
-        <value>3</value>
-    </property>
- 
-     <property>
-        <name>yarn.nodemanager.aux-services</name>
-        <value>mapreduce_shuffle</value>
-    </property>
-
-    <property>
-      <name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
-      <value>org.apache.hadoop.mapred.ShuffleHandler</value>
-     </property> 
 
     <property>
         <name>yarn.nodemanager.resource.memory-mb</name>
-        <value>64768</value>
+        <value>16384</value>
     </property>
     <property>
         <name>yarn.nodemanager.resource.cpu-vcores</name>
         <value>24</value>
     </property>
-    <property>
-        <name>yarn.nodemanager.vmem-pmem-ratio</name>
-        <value>2.1</value>
-    </property>
 
-    <property>
-        <name>yarn.nonemanager.vmem-check-enabled</name>
-        <value>false</value>
-    </property>
 
 </configuration>

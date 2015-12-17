@@ -1,9 +1,10 @@
 #!/bin/sh
 
+
 #export CONFIG="$HOME/.hadoop-$PBS_JOBID"
 
-[ -z $DEBUG_HADOOP ] || echo "runworker config_dir $CONFIG"
-[ -z $DEBUG_HADOOP ] || echo "runworker home_dir $HADOOP_HOME"
+#[ -z $DEBUG_HADOOP ] || echo "runworker config_dir $CONFIG"
+#[ -z $DEBUG_HADOOP ] || echo "runworker home_dir $HADOOP_HOME"
 
 
 [ ! -z $HADOOP_PRELOAD ] && export LD_PRELOAD=$HADOOP_PRELOAD
@@ -34,6 +35,13 @@ function cleanup {
 trap cleanup 2 15
 
 #. $CONFIG/yarn-env.sh
+
+
+[ -z $DEBUG_HADOOP ] || echo "Starting TACHYON worker on $ID"
+$JAVA -cp $HADOOP_CLASSPATH -Dtachyon.home=$TACHYON_HOME -Dtachyon.logger.type="WORKER_LOGGER" -Dlog4j.configuration=file:$CONF/log4j_tachyon.properties $TACHYON_WORKER_JAVA_OPTS tachyon.worker.TachyonWorker > $TACHYON_LOGS_DIR/tachyon_worker_$ID.out 2>&1  &
+#$JAVA -cp $HADOOP_CLASSPATH -Dtachyon.home=$TACHYON_HOME -Dtachyon.logger.type="WORKER_LOGGER" -Dlog4j.configuration=file:$CONF/log4j_tachyon.properties $TACHYON_WORKER_JAVA_OPTS tachyon.worker.TachyonWorker > $TACHYON_LOGS_DIR/tachyon_worker_$ID.out  
+
+
 
 if [ $(grep -c $ID $NODELIST) -gt 0 ] ;then
   export HID=$(grep ":$ID:" $NODELIST|awk -F: '{print $1}')

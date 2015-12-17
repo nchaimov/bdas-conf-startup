@@ -6,13 +6,13 @@
 # Run parameters
 JAVA_HOME=/opt/java/default
 
-PROJ_DIR="/global/project/projectdirs/mphpcrd/khaledi"
+PROJ_DIR="/project/projectdirs/m2018/nchaimov"
 #FIXME: should turn off the DEBUG
 export DEBUG_HADOOP=1
 export CONFIG="$PROJ_DIR/.hadoop-$PBS_JOBID"
 #FIXME: HADOOP_HOME should be obselete, but have not checked
-#export HADOOP_HOME="$PROJ_DIR/hadoop-2.4.1-src/hadoop-dist/target/hadoop-2.4.1/"
-export HADOOP_HOME="$PROJ_DIR/hadoop-2.5.2-src/hadoop-dist/target/hadoop-2.5.2/"
+export HADOOP_HOME="$PROJ_DIR/hadoop-2.4.1-src/hadoop-dist/target/hadoop-2.4.1/"
+#export HADOOP_HOME="$PROJ_DIR/hadoop-2.r.2-src/hadoop-dist/target/hadoop-2.5.2/"
 
 #export HADOOP_HOME="$PROJ_DIR/hadoop-2.6.0-src/hadoop-dist/target/hadoop-2.6.0/"
 
@@ -74,7 +74,7 @@ echo "http://$HNAME:50030/" > ~/hadoop.lnk
 
 echo "Will start on $NODECT nodes"
 echo ""
-echo "Resource Manager will available at"
+echo "Resource Manager will be available at"
 echo "http://$IP:8032/"
 echo "Track jobs using w3m http://$IP:8088/"
 

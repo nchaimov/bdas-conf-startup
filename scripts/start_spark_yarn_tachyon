@@ -7,6 +7,8 @@
 
 #JAVA_HOME=/opt/java/jdk1.7.0_45
 
+set -x
+
 PROJ_DIR="/scratch1/scratchdirs/nchaimov/bdas-inst"
 #FIXME: should turn off the DEBUG
 export DEBUG_HADOOP=1
@@ -27,6 +29,7 @@ HADOOP_YARN_LIB="$BDAS_HOME/lib"
 export TMPL=$BDAS_HOME/conf/$NERSC_HOST
 export SPARK_TMPL="$BDAS_HOME/spark_conf/$NERSC_HOST"
 #DATANODES=1
+export TACHYON_HOME=$PROJ_DIR/tachyon/
 
 function cleanup {
   echo "Called cleanup"
@@ -115,12 +118,19 @@ for file in "mapred" "core" "hdfs" "yarn" "mapred-queues" ; do
 	sed "s|%USER%|$USER|" > $CONFIG/$file-site.xml
 done
 
-for file in yarn-env log4j hadoop-policy hadoop-metrics hadoop-metrics2 hadoop-env container-executor configuration capacity-scheduler ; do
+for file in yarn-env log4j log4j_tachyon hadoop-policy hadoop-metrics hadoop-metrics2 hadoop-env container-executor configuration capacity-scheduler ; do
   cp $TMPL/$file.* $CONFIG/
 done
 
 for file in httpfs; do
   cp $TMPL/$file* $CONFIG/
+done
+
+for file in "tachyon-env"; do
+  cat $TMPL/$file.sh.tmpl | \
+	sed "s|%SCRATCH%|$SCRATCH|"| \
+	sed "s|%IP%|$IP|" \
+  > $CONFIG/$file.sh
 done
 
 for file in "fairscheduler.xml" "log4j.properties" "metrics.properties" "spark-defaults.conf" "spark-env.sh" ; do
@@ -162,6 +172,20 @@ $HADOOP_HOME/sbin/yarn-daemon.sh --config $CONFIG start resourcemanager > $LOGS/
 [ -z $DEBUG_HADOOP ] || echo "Starting the history server"
 $HADOOP_HOME/sbin/mr-jobhistory-daemon.sh --config $CONFIG start historyserver > $LOGS/historyserver.log 2>&1 
 
+. $CONFIG/tachyon-env.sh
+export HADOOP_CLASSPATH=$TACHYON_JAR:$HADOOP_CLASSPATH
+[ -z $DEBUG_HADOOP ] || echo "Creating TACHYON filesystem"
+cp $CONFIG/slaves $CONFIG/workers
+[ -d "$TACHYON_RAM_FOLDER" ] || mkdir $TACHYON_RAM_FOLDER
+
+
+#[ -z $DEBUG_HADOOP ] || echo "Formatting TACHYON"
+#$TACHYON_HOME/bin/tachyon format -s &
+#sleep 2
+[ -z $DEBUG_HADOOP ] || echo "Starting the TACHYON MASTER"
+
+$JAVA -cp $HADOOP_CLASSPATH -Dtachyon.home=$TACHYON_HOME -Dtachyon.logger.type="MASTER_LOGGER" -Dlog4j.configuration=file:$CONF/log4j_tachyon.properties $TACHYON_WORKER_JAVA_OPTS tachyon.master.TachyonMaster > $TACHYON_LOGS_DIR/tachyon_master.out 2>&1  &
+
 
 # TODO: Add check for resource manager running.  Use sleep as work around.
 sleep 10
@@ -173,7 +197,7 @@ create_env
 # Start map reduce tasks
 #
 [ -z $DEBUG_HADOOP ] || echo "Starting node managers"
-$RUN_DEEP $BDAS_HOME/scripts/run_worker &
+$RUN_DEEP $BDAS_HOME/scripts/run_worker_tachyon &
 
 # FIXME:The NUMA aware version 
 #[ -z $DEBUG_HADOOP ] || echo "Starting NUMA aware node manager"
