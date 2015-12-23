@@ -11,11 +11,11 @@ let NODECT=$NODECT
 export GET_ID="srun -Q -N $NODECT --ntasks=$NODECT cat /proc/cray_xt/nid"
 export GET_IPS="srun -N $NODECT --ntasks=$NODECT /sbin/ifconfig $INT"
 
-export RUN_DEEP="srun -N $NODECT --ntasks=$NODECT --cpus-per-task=$THREADS"
+export RUN_DEEP="srun -N $NODECT --ntasks=$NODECT --cpus-per-task=$NTHREADS"
 NNODECT=$(($NODECT * 2))
 export NGET_ID="srun -Q -N $NNODECT --ntasks=$NNODECT --ntasks-per-socket=1  cat /proc/cray_xt/nid"
 
-export NRUN_DEEP="srun -N $NNODECT --ntasks=$NNODECT --ntasks-per-socket=1 --cpus-per-task=$NTHREADS"
+export NRUN_DEEP="srun -N $NNODECT --ntasks=$NNODECT --ntasks-per-socket=1 --cpus-per-task=$THREADS"
 
 export IDCOMMAND='ID="$(cat /proc/cray_xt/nid)"'
 
