@@ -1,0 +1,5 @@
+all the files in this directory are from:
+
+/global/project/projectdirs/mphpcrd/khaledi/hadoop-2.4.1-src/hadoop-dist/target/hadoop-2.4.1/etc/hadoop
+
+

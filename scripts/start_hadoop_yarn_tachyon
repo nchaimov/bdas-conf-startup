@@ -1,6 +1,5 @@
 #!/bin/sh
-#PBS -N Hadoop
-#PBS -V
+#SBATCH -J Hadoop
 
 #
 # Run parameters

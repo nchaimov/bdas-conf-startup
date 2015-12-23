@@ -1,8 +1,8 @@
 #!/bin/sh
 
-#export CONFIG="$HOME/.hadoop-$PBS_JOBID"
+#export CONFIG="$HOME/.hadoop-$SLURM_JOB_ID"
 #export TMPL=$HADOOP_HOME/../conf/conf-personal/$NERSC_HOST
-#export LOGS="$SCRATCH/logs/${NERSC_HOST}-${PBS_JOBID}"
+#export LOGS="$SCRATCH/logs/${NERSC_HOST}-${SLURM_JOB_ID}"
 
 if [ -d $CONFIG ] ; then
   if [ -e $CONFIG/pids ] ; then

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 
-#export CONFIG="$HOME/.hadoop-$PBS_JOBID"
+#export CONFIG="$HOME/.hadoop-$SLURM_JOB_ID"
 
 #[ -z $DEBUG_HADOOP ] || echo "runworker config_dir $CONFIG"
 #[ -z $DEBUG_HADOOP ] || echo "runworker home_dir $HADOOP_HOME"

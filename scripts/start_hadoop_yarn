@@ -1,15 +1,14 @@
 #!/bin/sh
-#PBS -N Hadoop
-#PBS -V
+#SBATCH -J Hadoop
 
 #
 # Run parameters
 JAVA_HOME=/opt/java/default
 
-PROJ_DIR="/project/projectdirs/m2018/nchaimov"
+PROJ_DIR="/global/cscratch1/sd/nchaimov/bdas-inst"
 #FIXME: should turn off the DEBUG
 export DEBUG_HADOOP=1
-export CONFIG="$PROJ_DIR/.hadoop-$PBS_JOBID"
+export CONFIG="$PROJ_DIR/.hadoop-$SLURM_JOB_ID"
 #FIXME: HADOOP_HOME should be obselete, but have not checked
 export HADOOP_HOME="$PROJ_DIR/hadoop-2.4.1-src/hadoop-dist/target/hadoop-2.4.1/"
 #export HADOOP_HOME="$PROJ_DIR/hadoop-2.r.2-src/hadoop-dist/target/hadoop-2.5.2/"
@@ -42,7 +41,7 @@ trap cleanup 9 15
 
 
 
-export LOGS="$SCRATCH/logs/${NERSC_HOST}-${PBS_JOBID}"
+export LOGS="$SCRATCH/logs/${NERSC_HOST}-${SLURM_JOB_ID}"
 echo "Logs can be found in $LOGS"
 [ ! -d "$LOGS" ] && mkdir -p $LOGS
 export NODELIST="$CONFIG/nodelist"

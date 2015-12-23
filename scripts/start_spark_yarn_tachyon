@@ -1,6 +1,5 @@
 #!/bin/sh
-#PBS -N Hadoop
-#PBS -V
+#SBATCH -J Hadoop
 
 #
 # Run parameters
@@ -9,15 +8,15 @@
 
 set -x
 
-PROJ_DIR="/scratch1/scratchdirs/nchaimov/bdas-inst"
+PROJ_DIR="/global/cscratch1/sd/nchaimov/bdas-inst"
 #FIXME: should turn off the DEBUG
 export DEBUG_HADOOP=1
-export CONFIG="$PROJ_DIR/.hadoop-$PBS_JOBID"
+export CONFIG="$PROJ_DIR/.hadoop-$SLURM_JOB_ID"
 #FIXME: HADOOP_HOME should be obselete, but have not checked
 export HADOOP_HOME="$PROJ_DIR/hadoop/hadoop-dist/target/hadoop-2.4.1-INSTRUMENT-SNAPSHOT"
 export SPARK_HOME="$PROJ_DIR/spark"
 export HADOOP_YARN_HOME=$HADOOP_HOME
-export SPARK_CONFIG="$PROJ_DIR/.spark-$PBS_JOBID"
+export SPARK_CONFIG="$PROJ_DIR/.spark-$SLURM_JOB_ID"
 export SPARK_CONF_DIR=$SPARK_CONFIG
 export HADOOP_MAPREDUCE_DIR=$HADOOP_HOME/share/hadoop/mapreduce/
 export HADOOP_MAPRED_HOME=$HADOOP_HOME
@@ -47,7 +46,7 @@ trap cleanup 9 15
 
 
 
-export LOGS="$SCRATCH/logs/${NERSC_HOST}-${PBS_JOBID}"
+export LOGS="$SCRATCH/logs/${NERSC_HOST}-${SLURM_JOB_ID}"
 
 echo "Hadoop/yarn Logs can be found in $LOGS"
 [ ! -d "$LOGS" ] && mkdir -p $LOGS
